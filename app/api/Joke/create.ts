@@ -1,6 +1,7 @@
 import { db } from "../../utils/db.server";
 
 type Joke = {
+  jokesterId: string;
   name: string;
   content: string;
 };

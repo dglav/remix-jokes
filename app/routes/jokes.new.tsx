@@ -3,11 +3,15 @@ import { useActionData } from "@remix-run/react";
 import { useState } from "react";
 
 import { badRequest } from "~/utils/request.server";
+import { requireUserId } from "~/utils/session.server";
+
 import { validate, validateJokeName } from "../api/Joke/validate";
 import { create } from "../api/Joke/create";
 import { output } from "../api/Joke/output/outputForFormInput";
 
 export const action = async ({ request }: ActionArgs) => {
+  const userId = await requireUserId(request);
+
   const form = await request.formData();
 
   const content = form.get("content")?.toString();
@@ -22,19 +26,17 @@ export const action = async ({ request }: ActionArgs) => {
     });
   }
 
-  const joke = await create(validationResult.fields);
+  const joke = await create({ ...validationResult.fields, jokesterId: userId });
 
   return output(joke);
 };
 
 export default function NewJokeRoute() {
   const actionData = useActionData<typeof action>();
-  const [isValid, setIsValid] = useState<boolean>(false);
   const [hasNameError, setHasNameError] = useState<boolean>(false);
 
   return (
     <div>
-      <button onClick={() => setIsValid(!isValid)}>click for rerender</button>
       <p>Add your own hilarious joke</p>
       <form method="post">
         <div>
