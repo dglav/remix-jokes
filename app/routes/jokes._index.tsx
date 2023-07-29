@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 import type { LoaderArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { db } from "../utils/db.server";
 
 export const loader = async ({ params }: LoaderArgs) => {
@@ -14,7 +14,7 @@ export const loader = async ({ params }: LoaderArgs) => {
   if (!randomJoke) {
     throw new Error("Joke not found");
   }
-  return json({ joke: randomJoke });
+  return json({ randomJoke });
 };
 
 export default function JokesIndexRoute() {
@@ -23,7 +23,8 @@ export default function JokesIndexRoute() {
   return (
     <div>
       <p>Here's a random joke:</p>
-      <p>{data.joke.content}</p>
+      <p>{data.randomJoke.content}</p>
+      <Link to={data.randomJoke.id}>"{data.randomJoke.name}" Permalink</Link>
     </div>
   );
 }
